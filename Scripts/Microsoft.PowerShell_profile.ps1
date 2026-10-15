@@ -4,7 +4,7 @@ $JumpDirs = [ordered]@{
     gb   = 'D:\GitHub'
     id   = 'D:\Ideas'
     pj   = 'D:\Project'
-    sp   = 'D:\Scripts'
+    sx   = 'D:\Scripts'
 }
 
 # ── 宽度(中文2格) ──
@@ -26,23 +26,12 @@ function Go([string]$Root, [string]$Name) {
 function ai { param([string]$Name) Go $JumpDirs.ai $Name }
 function gb { param([string]$Name) Go $JumpDirs.gb $Name }
 function id { param([string]$Name) Go $JumpDirs.id $Name }
-# sp 是内置别名(Set-ItemProperty),别名优先于函数,须先移除
-if (Test-Path alias:sp) { Remove-Item alias:sp -Force }
-function sp { param([string]$Name) Go $JumpDirs.sp $Name }
-function pj {
-    param([string]$Name)
-    if (!$Name) {
-        if (!(Test-Path $JumpDirs.pj)) { Write-Host "项目根不存在: $($JumpDirs.pj)" -f Red; return }
-        Write-Host '项目 (pj <名>):' -f Cyan
-        Get-ChildItem $JumpDirs.pj -Directory | Sort-Object Name | ForEach-Object { Write-Host "  $($_.Name)" -f DarkGray }
-        return
-    }
-    Go $JumpDirs.pj $Name
-}
+function sx { param([string]$Name) Go $JumpDirs.sx $Name }
+function pj { param([string]$Name) Go $JumpDirs.pj $Name }
 
-Register-ArgumentCompleter -CommandName ai, gb, id, pj, sp -ScriptBlock {
+Register-ArgumentCompleter -CommandName ai, gb, id, pj, sx -ScriptBlock {
     param($commandName, $wordToComplete)
-    $r = @{ ai = $JumpDirs.ai; gb = $JumpDirs.gb; id = $JumpDirs.id; pj = $JumpDirs.pj; sp = $JumpDirs.sp }[$commandName]
+    $r = @{ ai = $JumpDirs.ai; gb = $JumpDirs.gb; id = $JumpDirs.id; pj = $JumpDirs.pj; sx = $JumpDirs.sx }[$commandName]
     if ($r -and (Test-Path $r)) { Get-ChildItem $r -Directory -Name | Where-Object { $_ -like "*$wordToComplete*" } | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) } }
 }
 
@@ -62,7 +51,7 @@ function Show-JumpPanel {
     Row 'gb <名>' $JumpDirs.gb Yellow Yellow
     Row 'id <名>' $JumpDirs.id Yellow Yellow
     Row 'pj <名>' $JumpDirs.pj Yellow Yellow
-    Row 'sp <名>' $JumpDirs.sp Yellow Yellow
+    Row 'sx <名>' $JumpDirs.sx Yellow Yellow
     Write-Host '│' -f DarkGreen
     Write-Host '╰' -NoNewline -f DarkGreen; Write-Host $bar -f DarkGreen
     Write-Host ''
